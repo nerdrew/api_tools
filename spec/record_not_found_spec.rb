@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe APITools::RecordNotFound do
+RSpec.describe APITools::RecordNotFound do
   describe 'initialize' do
     it 'only allows one attribute => value in the finder' do
       expect do
@@ -17,7 +17,7 @@ describe APITools::RecordNotFound do
 
   describe '#to_s' do
     it 'returns the argument string' do
-      expect(APITools::RecordNotFound.new('why')).to eq('why')
+      expect(APITools::RecordNotFound.new('why').to_s).to eq('why')
     end
   end
 end

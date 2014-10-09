@@ -21,8 +21,8 @@ module APITools
 
     def lint(fields)
       params, missing, unpermitted, mismatch = lint_hash(self, fields)
-      APITools.logger.warn "Unpermitted params: #{unpermitted.inspect}"
-      APITools.logger.warn "Mismatched type params: #{mismatch.inspect}"
+      APITools.logger.info "Unpermitted params: #{unpermitted.inspect}" unless unpermitted.empty?
+      APITools.logger.info "Mismatched type params: #{mismatch.inspect}" unless mismatch.empty?
       fail Error.new(missing, mismatch) if !missing.empty? || !mismatch.empty?
       params
     end
@@ -85,7 +85,7 @@ module APITools
           raise "bad value: #{value.inspect}"
         end
       end
-      (tracker.keys - %w(format action controller)).each do |unpermitted_param|
+      tracker.keys.each do |unpermitted_param|
         params.delete(unpermitted_param)
         unpermitted_params << unpermitted_param
       end

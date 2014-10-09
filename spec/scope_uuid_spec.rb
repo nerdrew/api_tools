@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe APITools::ScopeUUID do
+RSpec.describe APITools::ScopeUUID do
   build_model :bar do
     string :uuid
   end
