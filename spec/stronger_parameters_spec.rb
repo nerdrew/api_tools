@@ -31,21 +31,34 @@ RSpec.describe APITools::StrongerParameters do
       expect(hash.lint(boo: String)).to eq('boo' => 'gah')
     end
 
-    it 'works with arrays of a type' do
-      hash['foo'] = ['cat', 'dog']
-      expect(hash.lint(foo: [String])).to eq('foo' => ['cat', 'dog'])
+    context 'with arrays' do
+      it 'works with arrays of a type' do
+        hash['foo'] = ['cat', 'dog']
+        expect(hash.lint(foo: [String])).to eq('foo' => ['cat', 'dog'])
+      end
+
+      it 'raises if there is a type mismatch in an array' do
+        hash['foo'] = ['cat', 'dog']
+        expect { hash.lint(foo: [Integer]) }.to raise_exception(APITools::StrongerParameters::Error)
+      end
+
+      it 'raises if there is an array mismatch' do
+        hash['foo'] = ['cat', 'dog']
+        expect { hash.lint(foo: String) }.to raise_exception(APITools::StrongerParameters::Error)
+        hash['foo'] = 'cat'
+        expect { hash.lint(foo: [String]) }.to raise_exception(APITools::StrongerParameters::Error)
+      end
     end
 
-    it 'raises if there is a type mismatch in an array' do
-      hash['foo'] = ['cat', 'dog']
-      expect { hash.lint(foo: [Integer]) }.to raise_exception(APITools::StrongerParameters::Error)
-    end
-
-    it 'raises if there is an array mismatch' do
-      hash['foo'] = ['cat', 'dog']
-      expect { hash.lint(foo: String) }.to raise_exception(APITools::StrongerParameters::Error)
-      hash['foo'] = 'cat'
-      expect { hash.lint(foo: [String]) }.to raise_exception(APITools::StrongerParameters::Error)
+    context 'with an array of nested params' do
+      it 'works' do
+        nested1 = klass.new
+        nested1['bam'] = 'cat'
+        nested2 = klass.new
+        nested2['bam'] = 'dog'
+        hash['foo'] = [nested1, nested2]
+        expect(hash.lint(foo: [{bam: String}])).to eq('foo' => [{'bam' => 'cat'}, {'bam' => 'dog'}])
+      end
     end
 
     context 'with nested params' do
