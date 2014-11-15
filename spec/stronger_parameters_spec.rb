@@ -20,9 +20,22 @@ RSpec.describe APITools::StrongerParameters do
       expect { hash.lint(foo!: String) }.to raise_exception(APITools::StrongerParameters::Error)
     end
 
-    it 'raises if there is a type mismatch' do
-      hash['foo'] = 'bam'
-      expect { hash.lint(foo: Integer) }.to raise_exception(APITools::StrongerParameters::Error)
+    context 'type mismatch' do
+      it 'raises if there is a type mismatch' do
+        hash['foo'] = 'bam'
+        expect { hash.lint(foo: Integer) }.to raise_exception(APITools::StrongerParameters::Error)
+      end
+
+      it 'uses TrueClass || FalseClass for bools' do
+        hash['foo'] = 'bam'
+        expect { hash.lint(foo: TrueClass) }.to raise_exception(APITools::StrongerParameters::Error)
+        hash['foo'] = true
+        expect { hash.lint(foo: TrueClass) }.not_to raise_exception
+        expect { hash.lint(foo: FalseClass) }.not_to raise_exception
+        hash['foo'] = false
+        expect { hash.lint(foo: TrueClass) }.not_to raise_exception
+        expect { hash.lint(foo: FalseClass) }.not_to raise_exception
+      end
     end
 
     it 'strips unpermitted params' do

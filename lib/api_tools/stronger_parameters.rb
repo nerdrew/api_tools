@@ -57,6 +57,8 @@ module APITools
             rescue ArgumentError
               type_mismatches << key.name
             end
+          elsif value == TrueClass || value == FalseClass
+            type_mismatches << key.name unless params[key.name] == true || params[key.name] == false
           else
             type_mismatches << key.name unless params[key.name].is_a?(value)
           end
