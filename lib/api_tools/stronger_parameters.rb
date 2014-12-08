@@ -16,7 +16,7 @@ module APITools
       params, missing, unpermitted, mismatch = lint_hash(self, fields)
       fail Error.new(missing, mismatch, unpermitted) if !missing.empty? ||
         !unpermitted.empty? || !mismatch.empty?
-      params
+      params.permit!
     end
 
     def lint(fields)
@@ -24,7 +24,7 @@ module APITools
       APITools.logger.info "Unpermitted params: #{unpermitted.inspect}" unless unpermitted.empty?
       APITools.logger.info "Mismatched type params: #{mismatch.inspect}" unless mismatch.empty?
       fail Error.new(missing, mismatch) if !missing.empty? || !mismatch.empty?
-      params
+      params.permit!
     end
 
     private

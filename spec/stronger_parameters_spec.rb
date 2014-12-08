@@ -1,7 +1,8 @@
 require 'spec_helper'
+require 'action_controller'
 
 RSpec.describe APITools::StrongerParameters do
-  klass = Class.new(Hash) { include APITools::StrongerParameters }
+  klass = Class.new(ActionController::Parameters) { include APITools::StrongerParameters }
   let(:hash) { klass.new }
 
   before(:all) do
@@ -13,6 +14,12 @@ RSpec.describe APITools::StrongerParameters do
       hash['foo'] = 2
       hash['boo'] = 'goat'
       expect { hash.lint(foo!: Integer, boo: String) }.not_to raise_exception
+    end
+
+    it 'sets permitted for valid params' do
+      hash['boo'] = 'goat'
+      expect(hash.permitted?).to be_falsey
+      expect(hash.lint(boo: String).permitted?).to be(true)
     end
 
     it 'raises if there is a missing required param' do
@@ -135,6 +142,12 @@ RSpec.describe APITools::StrongerParameters do
     it 'raises if there is an unpermitted param' do
       hash['boo'] = 'goat'
       expect { hash.lint!(foo: String) }.to raise_exception(APITools::StrongerParameters::Error)
+    end
+
+    it 'sets permitted for valid params' do
+      hash['boo'] = 'goat'
+      expect(hash.permitted?).to be_falsey
+      expect(hash.lint!(boo: String).permitted?).to be(true)
     end
   end
 end
